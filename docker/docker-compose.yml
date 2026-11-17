@@ -1,10 +1,12 @@
+# Nur MariaDB fuer die Backend-Entwicklung. Gesamtsystem (FE+BE+DB+S3): Repo refcard-05-fullstack-aws/docker-compose-local
 services:
   bbw-mariadb-trips-dev:
     image: mariadb
     container_name: bbw-mariadb-trips-dev
     environment:
-      - MYSQL_ROOT_PASSWORD=bbw123
-      - MYSQL_DATABASE=db_biztrips
+      # Passwort kommt aus der Shell-Umgebung, nicht aus dem Repo: export DB_PASSWORD=...
+      - MARIADB_ROOT_PASSWORD=${DB_PASSWORD:?DB_PASSWORD setzen}
+      - MARIADB_DATABASE=db_biztrips
     ports:
       - "3306:3306"
     volumes:

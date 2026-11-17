@@ -1,4 +1,62 @@
-# RefCard 03 – Spring Boot Backend + MariaDB
+# RefCard 05 – Backend: Spring Boot + Amazon RDS (MariaDB) + Amazon S3
+
+> **RefCard05 (M324 DevOps)** – Fork von `bbwlc/RefCard-03-be-SpringBootBusinessTrips` (Stand `v1-start`).
+> Gesamtdokumentation, AWS-Setup und lokales Docker Compose: **[refcard-05-fullstack-aws](https://github.com/Panat-ZHH/refcard-05-fullstack-aws)**
+> Frontend: **[refcard-05-fe-react-vite](https://github.com/Panat-ZHH/refcard-05-fe-react-vite)**
+
+[![Backend CI/CD](https://github.com/Panat-ZHH/refcard-05-be-springboot-businesstrips/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/Panat-ZHH/refcard-05-be-springboot-businesstrips/actions/workflows/ci-cd.yml)
+
+## Was ist neu in RefCard05?
+
+| Thema | Umsetzung | Dateien |
+|---|---|---|
+| CI/CD | build → test → Image → **Amazon ECR** → Rolling Deployment **ECS Fargate** → Smoke-Test | [`.github/workflows/ci-cd.yml`](.github/workflows/ci-cd.yml) |
+| Image | Multi-Stage: Maven/JDK 21 → JRE 21 (alpine, non-root, Healthcheck) | [`Dockerfile`](Dockerfile) |
+| Versionierung | Git-Tag `vX.Y.Z` → Image-Tags `X.Y.Z`, `X.Y`, `latest` + `sha-<commit>`; Version in `/actuator/info` | Pipeline, `pom.xml` (`${revision}`) |
+| Datenbank | **RDS MariaDB**; Host, Port, DB-Name, User, Passwort ausschliesslich aus Umgebungsvariablen (auf AWS aus Secrets Manager) | [`application-mariadb.properties`](src/main/resources/application-mariadb.properties), [`.aws/task-definition.json`](.aws/task-definition.json) |
+| Bilder | Storage-Abstraktion: lokal (Volume, RefCard04) **oder Amazon S3** (Profil `s3`) | [`ch.bbw.trips.images`](src/main/java/ch/bbw/trips/images) |
+| Least Privilege | Session Policy nur für den Bilder-Bucket (Learner Lab: keine eigenen Rollen) | [`iam/s3-least-privilege-policy.json`](src/main/resources/iam/s3-least-privilege-policy.json), [`S3ImageStorage`](src/main/java/ch/bbw/trips/images/S3ImageStorage.java) |
+
+### Spring-Profile
+
+| Profil | Datenbank | Bilder | Verwendung |
+|---|---|---|---|
+| *(default)* | H2 in-memory | lokal `./data/images` | Tests, schneller Start ohne Docker |
+| `mariadb` | MariaDB über `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` | – | lokal (Compose) und AWS (RDS) |
+| `s3` | – | S3-Bucket `S3_BUCKET` (optional `S3_ENDPOINT` für MinIO) | lokal (MinIO) und AWS |
+
+Auf ECS läuft das Backend mit `SPRING_PROFILES_ACTIVE=mariadb,s3`.
+
+### Bilder-API
+
+| Endpoint | Beschreibung |
+|---|---|
+| `GET /v1/images` | Liste der Bilder im Storage (`storage: s3://…`) |
+| `GET /v1/trips/{id}/image` | Bild eines Trips (aus S3) |
+| `PUT /v1/trips/{id}/image` | Bild hochladen (multipart, Feld `file`, JPEG/PNG/GIF/WebP, max. 5 MB) |
+
+Fehlende S3-Rechte führen zu einer verständlichen `503`-Antwort (Problem Details) und `imageStorage: DOWN` in `/actuator/health`,
+die Trips-API bleibt verfügbar (der ALB-Health-Check nutzt `/actuator/health/readiness` = App + DB).
+
+### Pipeline-Konfiguration (GitHub)
+
+| Typ | Name | Inhalt |
+|---|---|---|
+| Secret | `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN` | temporäre Learner-Lab-Zugangsdaten (laufen mit der Session ab) |
+| Variable | `DB_SECRET_ARN` | ARN des Secrets `biztrips/db` (keine Zugangsdaten, nur die Referenz) |
+| Variable | `S3_BUCKET` | Name des Bilder-Buckets |
+| Variable | `APP_URL` | `http://<ALB-DNS>` für Smoke-Test und CORS |
+
+### Release erstellen
+
+```bash
+git tag -a v1.1.0 -m "Release 1.1.0"
+git push origin v1.1.0
+```
+
+---
+
+## Ursprüngliche Beschreibung (RefCard 03)
 
 REST-API-Backend für die BusinessTrips-Applikation (Mitarbeitende, Business
 Trips, Flüge, Meetings). Teil der CI/CD-Übungssequenz **RefCard 02–05**
@@ -24,11 +82,12 @@ Startet auf Port 8080 mit einer flüchtigen In-Memory-H2-Datenbank (Daten sind n
 ### Mit MariaDB (persistent, wie in Produktion)
 
 ```bash
+export DB_USER=root DB_PASSWORD=<lokales-passwort-frei-waehlen>
 docker compose -f docker/docker-compose.yml up -d
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=mariadb
 ```
 
-- MariaDB läuft dann auf `localhost:3306` (Datenbank `db_biztrips`, User `root`, Passwort `bbw123`)
+- MariaDB läuft dann auf `localhost:3306` (Datenbank `db_biztrips`, User `root`, Passwort aus `DB_PASSWORD`)
 - phpMyAdmin ist unter [http://localhost:8082](http://localhost:8082) erreichbar (gleiche Zugangsdaten)
 - Die Demo-Daten werden nur beim allerersten Start eingefügt — ein Neustart der Applikation dupliziert sie nicht
 
