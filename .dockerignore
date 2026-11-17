@@ -1,0 +1,11 @@
+target/
+data/
+docker/database/
+.git/
+.github/
+.idea/
+.vscode/
+*.iml
+docs/
+*.md
+.env*
