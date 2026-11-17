@@ -23,7 +23,7 @@
 |---|---|---|---|
 | *(default)* | H2 in-memory | lokal `./data/images` | Tests, schneller Start ohne Docker |
 | `mariadb` | MariaDB über `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` | – | lokal (Compose) und AWS (RDS) |
-| `s3` | – | S3-Bucket `S3_BUCKET` (optional `S3_ENDPOINT` für MinIO) | lokal (MinIO) und AWS |
+| `s3` | – | S3-Bucket `S3_BUCKET` (optional `S3_ENDPOINT` für S3Mock) | lokal (S3Mock) und AWS |
 
 Auf ECS läuft das Backend mit `SPRING_PROFILES_ACTIVE=mariadb,s3`.
 

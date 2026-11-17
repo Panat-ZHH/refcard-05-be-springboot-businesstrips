@@ -7,7 +7,7 @@ import java.util.Optional;
  * Abstraktion fuer den Bilder-Storage (RefCard04 -> RefCard05).
  * <ul>
  *   <li>{@link LocalImageStorage}: Dateisystem/Docker-Volume (Default, Tests, lokale Entwicklung ohne S3)</li>
- *   <li>{@link S3ImageStorage}: Amazon S3 (AWS) bzw. S3-kompatibel (MinIO in docker-compose)</li>
+ *   <li>{@link S3ImageStorage}: Amazon S3 (AWS) bzw. S3-kompatibel (S3Mock in podman-compose)</li>
  * </ul>
  * Umschalten ueber die Property {@code storage.type=local|s3} (Spring-Profil {@code s3}).
  */

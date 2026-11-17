@@ -27,8 +27,8 @@ public record StorageProperties(String type, Local local, S3 s3, Seed seed, long
 	/**
 	 * @param bucket   Name des S3-Buckets (Pflicht bei storage.type=s3)
 	 * @param region   AWS-Region, Default us-east-1 (Learner Lab)
-	 * @param endpoint optionaler Endpoint-Override, z. B. http://minio:9000 fuer lokale Entwicklung
-	 * @param pathStyle Path-Style-Zugriff (fuer MinIO noetig)
+	 * @param endpoint optionaler Endpoint-Override, z. B. http://s3:9090 (S3Mock) fuer lokale Entwicklung
+	 * @param pathStyle Path-Style-Zugriff (fuer S3Mock/lokale S3-Emulatoren noetig)
 	 * @param scopedRoleArn optional: Rolle, die per STS AssumeRole mit einer Session Policy angenommen wird,
 	 *                      die nur diesen Bucket erlaubt (Least Privilege im Learner Lab, siehe S3ImageStorage)
 	 */

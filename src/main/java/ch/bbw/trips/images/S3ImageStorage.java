@@ -30,7 +30,7 @@ import java.util.Optional;
  * Bilder-Storage auf Amazon S3.
  * <p>
  * Credentials: {@code DefaultCredentialsProvider} des AWS SDK - auf ECS die Task-Rolle
- * ({@code taskRoleArn}), lokal die Umgebungsvariablen fuer MinIO. Es stehen keine Zugangsdaten im Code.
+ * ({@code taskRoleArn}), lokal die Umgebungsvariablen fuer den lokalen S3-Ersatz (S3Mock). Es stehen keine Zugangsdaten im Code.
  * <p>
  * <b>Least Privilege im AWS Academy Learner Lab:</b> Eigene IAM-Rollen ({@code iam:CreateRole}) sind dort
  * gesperrt, die Task-Rolle ist zwangsweise die breit berechtigte {@code LabRole}. Ist
