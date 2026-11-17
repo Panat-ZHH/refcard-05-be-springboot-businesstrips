@@ -43,8 +43,10 @@ names that don't have templates — dead/broken, not part of the REST API).
 ### Two datasource profiles, one seed data path
 
 - Default profile: embedded H2, ephemeral, reseeded fresh on every start.
-- `mariadb` profile (`application-mariadb.properties`): points at `docker/docker-compose.yml`'s MariaDB
-  (`db_biztrips` / `root` / `bbw123`, same credentials in both places — keep them in sync if you change one).
+- `mariadb` profile (`application-mariadb.properties`): connection only from env vars
+  `DB_HOST`/`DB_PORT`/`DB_NAME`/`DB_USER`/`DB_PASSWORD` (RefCard05: no credentials in the repo; on AWS they
+  come from Secrets Manager via the ECS task definition).
+- `s3` profile: image storage on Amazon S3 (`S3_BUCKET`, optional `S3_ENDPOINT` for MinIO).
 
 `BusinessTripsBackendApplication.demoData()` (a `CommandLineRunner`) seeds Employees/Flights/Trips/Meetings.
 It's guarded by `employeeRepository.count() > 0` — restarting against a persistent DB (MariaDB) will **not**
