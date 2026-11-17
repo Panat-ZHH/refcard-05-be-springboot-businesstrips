@@ -37,3 +37,6 @@ build/
 
 ### Docker Compose local MariaDB data (regenerated on `docker compose up`) ###
 docker/database/
+
+### Lokaler Bilder-Storage (storage.type=local) ###
+data/
