@@ -32,6 +32,8 @@ WORKDIR /app
 # Libraries und App getrennt kopieren -> bei Code-Aenderungen aendert sich nur der kleine App-Layer
 COPY --from=build --chown=app:app /workspace/target/extracted/lib/ lib/
 COPY --from=build --chown=app:app /workspace/target/extracted/app.jar app.jar
+# CA-Bundle von Amazon RDS: das Backend prueft das Server-Zertifikat der Datenbank (TLS verify-full)
+ADD --chown=app:app https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem /app/rds-ca.pem
 USER app
 
 ENV GIT_SHA=${GIT_SHA} \
