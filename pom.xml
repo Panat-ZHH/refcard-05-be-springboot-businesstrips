@@ -55,6 +55,11 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<!-- STS: AssumeRole mit Session Policy -> Least Privilege nur auf den Bilder-Bucket -->
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>sts</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>

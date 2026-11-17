@@ -21,6 +21,7 @@ public class ImageStorageHealthIndicator extends AbstractHealthIndicator {
 	@Override
 	protected void doHealthCheck(Health.Builder builder) {
 		builder.withDetail("storage", storage.describe());
+		if (storage instanceof S3ImageStorage s3) builder.withDetail("accessScope", s3.accessScope());
 		try {
 			storage.verifyAccess();
 			builder.up();

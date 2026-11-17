@@ -57,6 +57,16 @@ class S3ImageStorageTest {
 	}
 
 	@Test
+	void sessionPolicyAllowsOnlyTheImageBucket() {
+		String policy = S3ImageStorage.sessionPolicy("my-bucket");
+		assertThat(policy)
+				.contains("\"arn:aws:s3:::my-bucket\"")
+				.contains("\"arn:aws:s3:::my-bucket/trips/*\"")
+				.contains("s3:ListBucket").contains("s3:GetObject").contains("s3:PutObject")
+				.doesNotContain("s3:*").doesNotContain("s3:DeleteObject").doesNotContain("${BUCKET}");
+	}
+
+	@Test
 	void requiresBucket() {
 		assertThatThrownBy(() -> new S3ImageStorage(s3, " ")).hasMessageContaining("S3_BUCKET");
 	}

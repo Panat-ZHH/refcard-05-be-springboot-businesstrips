@@ -13,7 +13,7 @@ public record StorageProperties(String type, Local local, S3 s3, Seed seed, long
 	public StorageProperties {
 		if (type == null || type.isBlank()) type = "local";
 		if (local == null) local = new Local(null);
-		if (s3 == null) s3 = new S3(null, null, null, false);
+		if (s3 == null) s3 = new S3(null, null, null, false, null);
 		if (seed == null) seed = new Seed(true);
 		if (maxFileSize <= 0) maxFileSize = 5 * 1024 * 1024;
 	}
@@ -29,8 +29,10 @@ public record StorageProperties(String type, Local local, S3 s3, Seed seed, long
 	 * @param region   AWS-Region, Default us-east-1 (Learner Lab)
 	 * @param endpoint optionaler Endpoint-Override, z. B. http://minio:9000 fuer lokale Entwicklung
 	 * @param pathStyle Path-Style-Zugriff (fuer MinIO noetig)
+	 * @param scopedRoleArn optional: Rolle, die per STS AssumeRole mit einer Session Policy angenommen wird,
+	 *                      die nur diesen Bucket erlaubt (Least Privilege im Learner Lab, siehe S3ImageStorage)
 	 */
-	public record S3(String bucket, String region, String endpoint, boolean pathStyle) {
+	public record S3(String bucket, String region, String endpoint, boolean pathStyle, String scopedRoleArn) {
 		public S3 {
 			if (region == null || region.isBlank()) region = "us-east-1";
 		}
