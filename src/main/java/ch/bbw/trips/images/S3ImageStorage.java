@@ -2,6 +2,7 @@ package ch.bbw.trips.images;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
@@ -54,6 +55,7 @@ public class S3ImageStorage implements ImageStorage {
 	private final String bucket;
 	private final String accessScope;
 
+	@Autowired
 	public S3ImageStorage(StorageProperties props) {
 		this(buildClient(props.s3()), props.s3().bucket(), isScoped(props.s3()) ? "session-policy:bucket-only" : "task-role");
 	}
