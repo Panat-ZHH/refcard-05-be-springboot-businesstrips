@@ -22,9 +22,5 @@ public class SpringWebConfig implements WebMvcConfigurer {
 				.allowedMethods("GET", "POST", "PUT", "DELETE")
 				.allowedHeaders("Authorization", "Content-Type")
 				.exposedHeaders("Authorization");
-		// Versionsanzeige im Frontend-Footer
-		registry.addMapping("/actuator/info")
-				.allowedOrigins(allowedOrigins)
-				.allowedMethods("GET");
 	}
 }
